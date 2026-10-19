@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Car — JCA</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<%- include('partials/sidebar', { active: active }) %>
+<main class="main">
+  <%- include('partials/header', { pageTitle: pageTitle }) %>
+
+  <div class="form-page">
+    <form class="form-card" action="/add" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Make / બ્રાન્ડ *</label>
+          <input name="make" required placeholder="e.g. Maruti">
+        </div>
+        <div class="form-group">
+          <label>Model *</label>
+          <input name="model" required placeholder="e.g. Swift">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Year / વર્ષ *</label>
+          <input name="year" type="number" required placeholder="2019">
+        </div>
+        <div class="form-group">
+          <label>KM Driven</label>
+          <input name="km" type="number" placeholder="45000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fuel</label>
+          <select name="fuel">
+            <option>Petrol</option><option>Diesel</option><option>CNG</option>
+            <option>Electric</option><option>Hybrid</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Transmission</label>
+          <select name="transmission">
+            <option>Manual</option><option>Automatic</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Purchase Price (₹) *</label>
+          <input name="purchasePrice" type="number" required placeholder="400000">
+        </div>
+        <div class="form-group">
+          <label>Repair Cost (₹)</label>
+          <input name="repairCost" type="number" placeholder="15000" value="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Purchase Date</label>
+          <input name="purchaseDate" type="date" id="pdate">
+        </div>
+        <div class="form-group">
+          <label>Photo (optional)</label>
+          <input name="photo" type="file" accept="image/*">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>RC Document</label>
+          <input name="rcFile" type="file" accept="image/*,application/pdf">
+        </div>
+        <div class="form-group">
+          <label>Insurance Document</label>
+          <input name="insuranceFile" type="file" accept="image/*,application/pdf">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label>Notes / નોંધ</label>
+          <textarea name="notes" rows="3" placeholder="Any additional notes…"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <a href="/" class="btn-primary" style="background:#eef2f9;color:#6b7a94;box-shadow:none;">Cancel</a>
+        <button type="submit" class="btn-primary" style="flex:1;">Save Car</button>
+      </div>
+    </form>
+  </div>
+</main>
+<script>document.getElementById('pdate').valueAsDate = new Date();</script>
+</body>
+</html>

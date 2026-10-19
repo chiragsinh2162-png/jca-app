@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jai Chehar Auto Consult — Dashboard</title>
+<link rel="stylesheet" href="/style.css">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#F58220">
+</head>
+<body>
+
+<%- include('partials/sidebar', { active: active }) %>
+
+<main class="main">
+  <%- include('partials/header', { pageTitle: pageTitle }) %>
+
+  <div class="stats">
+    <div class="stat blue">
+      <div class="label">Total Cars</div>
+      <div class="value"><%= cars.length %></div>
+    </div>
+    <div class="stat orange">
+      <div class="label">In Stock / સ્ટોક</div>
+      <div class="value"><%= stockCount %></div>
+    </div>
+    <div class="stat red">
+      <div class="label">Invested / નિવેશ</div>
+      <div class="value">₹<%= totalInvestment.toLocaleString('en-IN') %></div>
+    </div>
+    <div class="stat green">
+      <div class="label">Profit / મુનાફો</div>
+      <div class="value">₹<%= totalProfit.toLocaleString('en-IN') %></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <form class="searchbox" action="/search" method="GET">
+      <input name="q" placeholder="Make, model, year શોધો…" value="<%= search %>">
+      <button type="submit">Search</button>
+    </form>
+    <div class="filter-btns">
+      <a href="/" class="<%= filter === 'all' ? 'active' : '' %>">All</a>
+      <a href="/search?filter=stock" class="<%= filter === 'stock' ? 'active' : '' %>">Stock</a>
+      <a href="/search?filter=sold" class="<%= filter === 'sold' ? 'active' : '' %>">Sold</a>
+    </div>
+    <a href="/add" class="btn-primary">＋ Add Car</a>
+  </div>
+
+  <% if (cars.length === 0) { %>
+    <div class="empty">
+      <h3>No cars yet</h3>
+      <p>Tap "＋ Add Car" to add your first car.</p>
+    </div>
+  <% } else { %>
+    <div class="cars-grid">
+      <% cars.forEach(car => { %>
+        <div class="car-card">
+          <div class="car-photo">
+            <% if (car.photo) { %><img src="/uploads/<%= car.photo %>" alt="car"><% } else { %><div class="ph-icon">🚗</div><% } %>
+            <span class="badge <%= car.status === 'Sold' ? 'sold' : 'stock' %>">
+              <%= car.status === 'Sold' ? 'Sold' : 'In Stock' %></span>
+          </div>
+          <div class="car-body">
+            <div class="car-title"><%= car.year %> <%= car.make %> <%= car.model %></div>
+            <div class="car-sub"><%= car.fuel || '—' %> · <%= car.transmission || '—' %> · <%= (car.km || 0).toLocaleString('en-IN') %> km</div>
+            <div class="car-prices"><span>Purchase</span><span>₹<%= (car.purchasePrice || 0).toLocaleString('en-IN') %></span></div>
+            <% if (car.repairCost > 0) { %>
+            <div class="car-prices"><span>Repairs</span><span>₹<%= (car.repairCost || 0).toLocaleString('en-IN') %></span></div>
+            <% } %>
+            <% if (car.status === 'Sold') { %>
+            <div class="car-prices"><span>Sold at</span><span>₹<%= (car.sellingPrice || 0).toLocaleString('en-IN') %></span></div>
+            <div class="profit-line"><span>Profit / મુનાફો</span>
+              <span class="amt <%= car.profit >= 0 ? 'pos' : 'neg' %>">₹<%= (car.profit || 0).toLocaleString('en-IN') %></span></div>
+            <% } %>
+            <div class="car-actions">
+              <a href="/car/<%= car.id %>" class="btn-view">View</a>
+              <% if (car.status !== 'Sold') { %>
+              <button class="btn-sell" onclick="openSell(<%= car.id %>, '<%= car.make %> <%= car.model %>')">Sell</button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<div class="modal-bg" id="sellModal">
+  <div class="modal">
+    <h2>Sell Car / ગાડી વેચો</h2>
+    <p id="sellCarName">—</p>
+    <form id="sellForm" method="POST">
+      <label>Selling Price (₹)</label>
+      <input name="sellingPrice" type="number" required placeholder="e.g. 85000">
+      <label>Sold Date</label>
+      <input name="soldDate" type="date" id="soldDateField">
+      <label>Buyer Name / ખરીદનારનું નામ</label>
+      <input name="buyerName" placeholder="Full name">
+      <label>Buyer Phone</label>
+      <input name="buyerPhone" placeholder="10-digit mobile">
+      <label>Buyer Address</label>
+      <input name="buyerAddress" placeholder="City, State">
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeSell()">Cancel</button>
+        <button type="submit" class="btn-confirm">Confirm Sale</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openSell(id, name) {
+    document.getElementById('sellCarName').textContent = name;
+    document.getElementById('sellForm').action = '/sell/' + id;
+    document.getElementById('soldDateField').valueAsDate = new Date();
+    document.getElementById('sellModal').classList.add('show');
+  }
+  function closeSell() { document.getElementById('sellModal').classList.remove('show'); }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>

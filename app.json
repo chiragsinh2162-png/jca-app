@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Jai Chehar Auto Consult",
+    "slug": "jca-mobile-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B2545"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jaychehar.autoconsult"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#0B2545"
+      },
+      "package": "com.jaychehar.autoconsult"
+    },
+    "web": {
+      "favicon": "./assets/logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dbab54d0-1cfb-43be-9d39-dd72078a32f4"
+      }
+    }
+  }
+}

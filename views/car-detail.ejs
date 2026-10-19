@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= car.year %> <%= car.make %> <%= car.model %></title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<%- include('partials/sidebar', { active: active }) %>
+<main class="main">
+  <%- include('partials/header', { pageTitle: pageTitle }) %>
+
+  <div class="detail-card">
+    <% if (car.photo) { %><img class="detail-photo" src="/uploads/<%= car.photo %>"><% } %>
+    <div class="detail-grid">
+      <div class="detail-item"><div class="lbl">Year</div><div class="val"><%= car.year %></div></div>
+      <div class="detail-item"><div class="lbl">Make</div><div class="val"><%= car.make %></div></div>
+      <div class="detail-item"><div class="lbl">Model</div><div class="val"><%= car.model %></div></div>
+      <div class="detail-item"><div class="lbl">Fuel</div><div class="val"><%= car.fuel || '—' %></div></div>
+      <div class="detail-item"><div class="lbl">Transmission</div><div class="val"><%= car.transmission || '—' %></div></div>
+      <div class="detail-item"><div class="lbl">KM</div><div class="val"><%= (car.km||0).toLocaleString('en-IN') %></div></div>
+      <div class="detail-item"><div class="lbl">Purchase Price</div><div class="val">₹<%= (car.purchasePrice||0).toLocaleString('en-IN') %></div></div>
+      <div class="detail-item"><div class="lbl">Total Repair Cost</div><div class="val" style="color:#F58220;">₹<%= (totalRepairCost||0).toLocaleString('en-IN') %></div></div>
+      <div class="detail-item"><div class="lbl">Status</div><div class="val"><%= car.status %></div></div>
+      <% if (car.status === 'Sold') { %>
+      <div class="detail-item"><div class="lbl">Sold Price</div><div class="val">₹<%= (car.sellingPrice||0).toLocaleString('en-IN') %></div></div>
+      <div class="detail-item"><div class="lbl">Profit</div><div class="val" style="color:<%= car.profit>=0?'#0a9d5c':'#d63a3a' %>;">₹<%= (car.profit||0).toLocaleString('en-IN') %></div></div>
+      <div class="detail-item"><div class="lbl">Invoice No</div><div class="val"><%= car.invoiceNo || '—' %></div></div>
+      <div class="detail-item"><div class="lbl">Buyer</div><div class="val"><%= car.buyerName || '—' %></div></div>
+      <div class="detail-item"><div class="lbl">Phone</div><div class="val"><%= car.buyerPhone || '—' %></div></div>
+      <div class="detail-item"><div class="lbl">Address</div><div class="val"><%= car.buyerAddress || '—' %></div></div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Documents -->
+  <div class="section-title">📄 Documents</div>
+  <div class="detail-card">
+    <div class="detail-grid">
+      <div class="detail-item"><div class="lbl">RC File</div>
+        <div class="val"><% if (car.rcFile) { %><a href="/uploads/<%= car.rcFile %>" target="_blank">View RC</a><% } else { %>Not uploaded<% } %></div></div>
+      <div class="detail-item"><div class="lbl">Insurance</div>
+        <div class="val"><% if (car.insuranceFile) { %><a href="/uploads/<%= car.insuranceFile %>" target="_blank">View Insurance</a><% } else { %>Not uploaded<% } %></div></div>
+    </div>
+  </div>
+
+  <!-- Payment screenshots -->
+  <div class="section-title">💳 Payment Screenshots</div>
+  <div class="detail-card">
+    <form action="/car/<%= car.id %>/payment" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Screenshot *</label>
+          <input name="screenshot" type="file" accept="image/*" required>
+        </div>
+        <div class="form-group">
+          <label>Stage</label>
+          <select name="stage">
+            <option>Purchase Payment</option>
+            <option>Repair Payment</option>
+            <option>Sale Payment</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full">
+          <label>Note / નોંધ</label>
+          <input name="note" placeholder="e.g. Advance ₹10,000 GPay">
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">Upload Screenshot</button>
+    </form>
+
+    <% if (payments.length > 0) { %>
+      <div class="payments-grid" style="margin-top:20px;">
+        <% payments.forEach(p => { %>
+          <div class="payment-card">
+            <img src="/uploads/<%= p.screenshot %>">
+            <div class="payment-info">
+              <div class="stage"><%= p.stage %></div>
+              <div class="note"><%= p.note || '—' %></div>
+              <div class="note" style="margin-top:4px;">📅 <%= p.date %></div>
+              <form action="/payment/<%= p.id %>/delete" method="POST" onsubmit="return confirm('Delete?')">
+                <button type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p style="color:#6b7a94;margin-top:16px;">No screenshots uploaded yet.</p>
+    <% } %>
+  </div>
+
+  <!-- Repair Bills -->
+  <div class="section-title">🔧 Repair Bills / રિપેર બિલ</div>
+  <div class="detail-card">
+    <form action="/car/<%= car.id %>/repair" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bill Image *</label>
+          <input name="billImage" type="file" accept="image/*" required>
+        </div>
+        <div class="form-group">
+          <label>Garage Name</label>
+          <input name="garageName" placeholder="e.g. Sharma Auto Works">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount (₹)</label>
+          <input name="amount" type="number" placeholder="5000">
+        </div>
+        <div class="form-group">
+          <label>Note / નોંધ</label>
+          <input name="note" placeholder="e.g. Brake pad replacement">
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">Upload Repair Bill</button>
+    </form>
+
+    <% if (repairBills && repairBills.length > 0) { %>
+      <div class="payments-grid" style="margin-top:20px;">
+        <% repairBills.forEach(b => { %>
+          <div class="payment-card">
+            <img src="/uploads/<%= b.billImage %>">
+            <div class="payment-info">
+              <div class="stage"><%= b.garageName || 'Repair' %></div>
+              <div class="note" style="font-weight:700;color:#F58220;font-size:13px;">
+                ₹<%= (b.amount||0).toLocaleString('en-IN') %>
+              </div>
+              <div class="note"><%= b.note || '—' %></div>
+              <div class="note" style="margin-top:4px;">📅 <%= b.date %></div>
+              <form action="/repair/<%= b.id %>/delete" method="POST" onsubmit="return confirm('Delete?')">
+                <button type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+      <p style="margin-top:14px;font-weight:700;color:#0B2545;">
+        Total Repair Cost: ₹<%= (totalRepairCost||0).toLocaleString('en-IN') %>
+      </p>
+    <% } else { %>
+      <p style="color:#6b7a94;margin-top:16px;">No repair bills uploaded yet.</p>
+    <% } %>
+  </div>
+
+  <!-- Edit car -->
+  <div class="section-title">✏️ Edit Car Details</div>
+  <div class="detail-card">
+    <form action="/update/<%= car.id %>" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group"><label>Make</label><input name="make" value="<%= car.make %>"></div>
+        <div class="form-group"><label>Model</label><input name="model" value="<%= car.model %>"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Year</label><input name="year" type="number" value="<%= car.year %>"></div>
+        <div class="form-group"><label>KM</label><input name="km" type="number" value="<%= car.km || 0 %>"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Fuel</label><input name="fuel" value="<%= car.fuel || '' %>"></div>
+        <div class="form-group"><label>Transmission</label><input name="transmission" value="<%= car.transmission || '' %>"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Purchase Price</label><input name="purchasePrice" type="number" value="<%= car.purchasePrice || 0 %>"></div>
+        <div class="form-group"><label>Purchase Date</label><input name="purchaseDate" type="date" value="<%= car.purchaseDate || '' %>"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Replace Photo</label><input name="photo" type="file" accept="image/*"></div>
+        <div class="form-group"><label>Replace RC</label><input name="rcFile" type="file"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Replace Insurance</label><input name="insuranceFile" type="file"></div>
+        <div class="form-group full"><label>Notes</label><textarea name="notes" rows="3"><%= car.notes || '' %></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+
+  <div style="margin-top:20px;">
+    <form action="/delete/<%= car.id %>" method="POST" onsubmit="return confirm('ચોક્કસ delete કરવું છે?')">
+      <button type="submit" style="background:#ffe9e9;color:#d63a3a;padding:12px 20px;border-radius:10px;font-weight:700;border:none;cursor:pointer;">🗑 Delete This Car</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

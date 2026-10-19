@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enquiries — JCA</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<%- include('partials/sidebar', { active: active }) %>
+<main class="main">
+  <%- include('partials/header', { pageTitle: pageTitle }) %>
+
+  <% if (enquiries.length === 0) { %>
+    <div class="empty"><h3>No enquiries yet</h3>
+      <p>When customers enquire about a car, they'll appear here.</p></div>
+  <% } else { %>
+    <table class="report-table">
+      <thead><tr><th>Customer</th><th>Phone</th><th>Car</th><th>Message</th><th>Date</th></tr></thead>
+      <tbody>
+        <% enquiries.forEach(e => { %>
+          <tr>
+            <td><%= e.customerName %></td>
+            <td><%= e.phone %></td>
+            <td><%= e.make ? e.make + ' ' + e.model : '—' %></td>
+            <td><%= e.message %></td>
+            <td><%= (e.date || '').slice(0, 10) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</main>
+</body>
+</html>

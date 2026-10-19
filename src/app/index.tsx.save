@@ -1,0 +1,141 @@
+  };
+
+  const handleLogin = () => {
+    if (username === 'chirag' && password === '12345') {
+      setIsLoggedIn(true);
+    } else {
+      Alert.alert('ભૂલ!', 'યુઝરનેમ અથવા પાસવર્ડ ખોટો છે.');
+    }
+  };
+
+  const handleAddCar = async () => {
+    if(!carName || !carPrice) {
+      Alert.alert('ધ્યાન આપો', 'ગાડીનું નામ અને કિંમત બંને ભરો.');
+      return;
+    }
+    const newCar = { id: Date.now().toString(), name: carName, price: carPrice };
+    const updatedCars = [...cars, newCar];
+    setCars(updatedCars);
+    
+    try {
+      await AsyncStorage.setItem('@jca_cars', JSON.stringify(updatedCars));
+      Alert.alert('સફળ!', `${carName} ગાડી ઉમેરાઈ ગઈ.`);
+      setCarName('');
+      setCarPrice('');
+    } catch (e) {
+      Alert.alert('એરર', 'ડેટા સેવ ન થઈ શક્યો.');
+    }
+  };
+
+  const handleDeleteCar = async (id: string) => {
+    const updatedCars = cars.filter(car => car.id !== id);
+    setCars(updatedCars);
+    await AsyncStorage.setItem('@jca_cars', JSON.stringify(updatedCars));
+  };
+
+  // લોગિન પછીનો ડેશબોર્ડ
+  if (isLoggedIn) {
+    return (
+      <SafeAreaView style={styles.dashboard}>
+        <View style={styles.header}>
+          <Text style={styles.dashTitle}>JCA Dashboard</Text>
+          <TouchableOpacity style={styles.logoutBtn} onPress={() => setIsLoggedIn(false)}>
+            <Text style={styles.btnText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView style={{width: '100%', padding: 20}}>
+          <Text style={styles.sectionTitle}>નવી ગાડી ઉમેરો</Text>
+          
+          <TextInput
+            style={styles.dashInput}
+            placeholder="ગાડીનું નામ (દા.ત. Maruti Swift)"
+            value={carName}
+            onChangeText={setCarName}
+          />
+
+          <TextInput
+            style={styles.dashInput}
+            placeholder="ખરીદ કિંમત (₹)"
+            value={carPrice}
+            onChangeText={setCarPrice}
+            keyboardType="numeric"
+          />
+
+          <TouchableOpacity style={styles.addBtn} onPress={handleAddCar}>
+            <Text style={styles.btnText}>ગાડી ઉમેરો (Add Car)</Text>
+          </TouchableOpacity>
+
+          <Text style={[styles.sectionTitle, {marginTop: 30}]}>તમારી ગાડીઓ ({cars.length})</Text>
+
+          {/* ગાડીઓનું લિસ્ટ */}
+          {cars.map((car) => (
+            <View key={car.id} style={styles.carItem}>
+              <View>
+                <Text style={styles.carName}>{car.name}</Text>
+                <Text style={styles.carPrice}>₹ {car.price}</Text>
+              </View>
+              <TouchableOpacity onPress={() => handleDeleteCar(car.id)} style={styles.deleteBtn}>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  // લોગિન સ્ક્રીન
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.logo}>JCA</Text>
+      <Text style={styles.title}>Jai Chehar Auto Consult</Text>
+      
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        placeholderTextColor="#999"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
+      
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#999"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+        <Text style={styles.btnText}>Login</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0B2545' },
+  logo: { fontSize: 60, fontWeight: 'bold', color: '#F58220', marginBottom: 10 },
+  title: { fontSize: 20, color: '#fff', marginBottom: 40, fontWeight: 'bold' },
+  input: { width: '85%', backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 15, fontSize: 16 },
+  loginBtn: { width: '85%', backgroundColor: '#F58220', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 10 },
+  btnText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  
+  dashboard: { flex: 1, backgroundColor: '#f4f6fb' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: '#0B2545' },
+  dashTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
+  logoutBtn: { backgroundColor: '#d63a3a', padding: 8, borderRadius: 8 },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#0B2545', marginBottom: 15, marginTop: 10 },
+  dashInput: { backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 15, fontSize: 16, borderWidth: 1, borderColor: '#ddd' },
+  addBtn: { backgroundColor: '#0a9d5c', padding: 15, borderRadius: 10, alignItems: 'center' },
+  
+  // નવા સ્ટાઈલ્સ લિસ્ટ માટે
+  carItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 10, borderWidth: 1, borderColor: '#ddd' },
+  carName: { fontSize: 16, fontWeight: 'bold', color: '#0B2545' },
+  carPrice: { fontSize: 14, color: '#F58220', fontWeight: 'bold', marginTop: 4 },
+  deleteBtn: { backgroundColor: '#d63a3a', padding: 8, borderRadius: 8 }
+});

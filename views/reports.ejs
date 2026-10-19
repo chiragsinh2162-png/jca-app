@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports — JCA</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<%- include('partials/sidebar', { active: active }) %>
+<main class="main">
+  <%- include('partials/header', { pageTitle: pageTitle }) %>
+
+  <div class="stats">
+    <div class="stat blue"><div class="label">Total Revenue</div>
+      <div class="value">₹<%= totalRevenue.toLocaleString('en-IN') %></div></div>
+    <div class="stat red"><div class="label">Total Spend</div>
+      <div class="value">₹<%= totalSpend.toLocaleString('en-IN') %></div></div>
+    <div class="stat green"><div class="label">Net Profit</div>
+      <div class="value">₹<%= totalProfit.toLocaleString('en-IN') %></div></div>
+  </div>
+
+  <div class="section-title">📅 Monthly Profit</div>
+  <% const months = Object.keys(monthly).sort(); %>
+  <% if (months.length === 0) { %>
+    <div class="empty"><h3>No sales yet</h3><p>Sell a car to see monthly profit.</p></div>
+  <% } else { %>
+    <table class="report-table">
+      <thead><tr><th>Month</th><th>Profit (₹)</th></tr></thead>
+      <tbody>
+        <% months.forEach(m => { %>
+          <tr>
+            <td><%= m %></td>
+            <td style="color:<%= monthly[m]>=0?'#0a9d5c':'#d63a3a' %>;font-weight:700;">
+              ₹<%= monthly[m].toLocaleString('en-IN') %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</main>
+</body>
+</html>o

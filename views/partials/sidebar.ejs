@@ -1,0 +1,23 @@
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <img src="/logo.png" alt="Jay Chehar Auto Consult" class="brand-logo">
+    <div class="logo-text">
+      <div class="l1">JAY CHEHAR</div>
+      <div class="l2">AUTO CONSULT</div>
+    </div>
+  </div>
+  <a href="/" class="nav-item <%= active === 'dashboard' ? 'active' : '' %>">
+    <span class="ico">📊</span><span class="txt">Dashboard</span></a>
+  <a href="/add" class="nav-item <%= active === 'add' ? 'active' : '' %>">
+    <span class="ico">➕</span><span class="txt">Add Car</span></a>
+  <a href="/search?filter=stock" class="nav-item <%= active === 'stock' ? 'active' : '' %>">
+    <span class="ico">🚗</span><span class="txt">In Stock</span></a>
+  <a href="/search?filter=sold" class="nav-item <%= active === 'sold' ? 'active' : '' %>">
+    <span class="ico">✅</span><span class="txt">Sold Cars</span></a>
+  <a href="/reports" class="nav-item <%= active === 'reports' ? 'active' : '' %>">
+    <span class="ico">📈</span><span class="txt">Reports</span></a>
+  <a href="/enquiries" class="nav-item <%= active === 'enquiries' ? 'active' : '' %>">
+    <span class="ico">📩</span><span class="txt">Enquiries</span></a>
+  <div class="side-footer">v3.0 · © Jai Chehar Auto Consult</div>
+</aside>o
+
